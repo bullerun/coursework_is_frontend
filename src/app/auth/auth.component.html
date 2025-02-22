@@ -1,0 +1,20 @@
+<div class="auth-container">
+  <h2>{{ isLoginMode ? 'Login' : 'Register' }}</h2>
+  <form (submit)="isLoginMode ? onLogin($event) : onRegister($event)">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" [(ngModel)]="email" name="email" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" [(ngModel)]="password" name="password" required>
+    </div>
+
+    <button type="submit">{{ isLoginMode ? 'Login' : 'Register' }}</button>
+  </form>
+
+  <button class="toggle-btn" (click)="toggleMode()">
+    Switch to {{ isLoginMode ? 'Register' : 'Login' }}
+  </button>
+</div>
