@@ -1,8 +1,8 @@
-import {Component, signal} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import { UserService} from "../service/user.service";
+import {UserService} from "../service/user.service";
 
 @Component({
     standalone: true,
@@ -10,13 +10,14 @@ import { UserService} from "../service/user.service";
     styleUrl: "./app.component.css",
     templateUrl: "./auth.component.html",
 })
-export class AuthComponent {
-    isLogin = signal(true);
-    errorMessage = '';
+export class AuthComponent implements OnInit {
+    authType = "";
     form: FormGroup;
+    title = "";
 
 
     constructor(
+        private readonly route: ActivatedRoute,
         private fb: FormBuilder,
         private userService: UserService,
         private router: Router
@@ -29,11 +30,16 @@ export class AuthComponent {
         });
     }
 
+    ngOnInit(): void {
+        this.authType = this.route.snapshot.url.at(-1)!.path;
+        this.title = this.authType === "login" ? "Sign in" : "Sign up";
+    }
+
     onSubmit() {
         if (this.form.invalid) return;
         const formData = this.form.getRawValue();
 
-        if (this.isLogin()) {
+        if (this.authType === "login") {
             this.userService.login({
                 username: formData.username!,
                 password: formData.password!
