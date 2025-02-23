@@ -1,0 +1,25 @@
+.table {
+  margin: 20px 0;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table th {
+  background-color: #343a40;
+  color: white;
+}
+
+.table td, .table th {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f8f9fa;
+}
+
+.text-monospace {
+  font-family: monospace;
+  font-size: 0.9em;
+}

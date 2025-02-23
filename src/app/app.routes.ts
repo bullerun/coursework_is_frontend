@@ -1,8 +1,9 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 import {AuthComponent} from './auth/auth.component';
 import {inject} from '@angular/core';
 import {UserService} from './service/user.service';
 import {map} from 'rxjs';
+import {OrganizationComponent} from './organization/organization.component';
 
 export const routes: Routes = [
   {
@@ -18,5 +19,9 @@ export const routes: Routes = [
     canActivate: [
       () => inject(UserService).isAuthenticated.pipe(map((isAuth) => !isAuth)),
     ],
+  },
+  {
+    path: "organization",
+    component: OrganizationComponent,
   }
 ];

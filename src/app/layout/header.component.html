@@ -15,6 +15,8 @@
       <div class="offcanvas-body pt-0 align-items-center">
         <ul class="navbar-nav mx-auto align-items-md-center">
           <li class="nav-link">ГОЙДА</li>
+          <li class="nav-link"><a routerLink="/organization" routerLinkActive="active" class="btn btn-light mx-2">organization</a>
+          </li>
         </ul>
 
         <div *ifAuthenticated="false" class="mt-lg-0 d-flex align-items-md-center">
@@ -23,7 +25,7 @@
         </div>
         <div *ifAuthenticated="true" class="mt-lg-0 d-flex align-items-md-center">
           <a (click)="logout()" class="btn btn-light mx-2">Log out</a>
-<!--          <a  *ifAdmin="true" routerLink="/admin">Заявки</a>-->
+          <!--          <a  *ifAdmin="true" routerLink="/admin">Заявки</a>-->
         </div>
       </div>
     </div>
