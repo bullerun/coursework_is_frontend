@@ -1,8 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {RouterLink, RouterLinkActive} from "@angular/router";
-import {AsyncPipe, NgIf} from "@angular/common";
 import {IfAuthenticatedDirective} from '../directives/if-authenticated.directive';
-import {AuthService} from '../service/auth.service';
+import {UserService} from '../service/user.service';
 
 
 @Component({
@@ -11,15 +10,13 @@ import {AuthService} from '../service/auth.service';
   imports: [
     RouterLinkActive,
     RouterLink,
-    AsyncPipe,
-    NgIf,
     IfAuthenticatedDirective,
   ],
   standalone: true,
 })
 export class HeaderComponent implements OnInit {
   constructor(
-    private readonly authService: AuthService,
+    private readonly userService: UserService,
   ) {
   }
 
@@ -27,6 +24,6 @@ export class HeaderComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
+    this.userService.logout();
   }
 }

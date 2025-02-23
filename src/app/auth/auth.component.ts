@@ -1,9 +1,8 @@
-// auth.component.ts
 import {Component, signal} from '@angular/core';
 import {FormBuilder, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {AuthService} from "../service/auth.service";
+import { UserService} from "../service/user.service";
 
 @Component({
     standalone: true,
@@ -19,7 +18,7 @@ export class AuthComponent {
 
     constructor(
         private fb: FormBuilder,
-        private authService: AuthService,
+        private userService: UserService,
         private router: Router
     ) {
 
@@ -35,22 +34,27 @@ export class AuthComponent {
         const formData = this.form.getRawValue();
 
         if (this.isLogin()) {
-            this.authService.login({
+            this.userService.login({
                 username: formData.username!,
                 password: formData.password!
             }).subscribe({
                 next: () => this.router.navigate(['/']),
-                error: (err) => this.errorMessage = err.message || 'Unknown error occurred'
+                error: (err) => this.handleError(err)
             });
         } else {
-            this.authService.register({
+            this.userService.register({
                 username: formData.username!,
                 email: formData.email!,
                 password: formData.password!
             }).subscribe({
                 next: () => this.router.navigate(['/']),
-                error: (err) => this.errorMessage = err.message || 'Unknown error occurred'
+                error: (err) => this.handleError(err)
             });
         }
+    }
+
+    private handleError(response: any) {
+        console.log(response || 'Unknown error occurred');
+        alert(response.error.message)
     }
 }
