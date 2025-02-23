@@ -1,20 +1,36 @@
 <div class="auth-container">
-  <h2>{{ isLoginMode ? 'Login' : 'Register' }}</h2>
-  <form (submit)="isLoginMode ? onLogin($event) : onRegister($event)">
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" [(ngModel)]="email" name="email" required>
+    <div class="auth-switch">
+        <button (click)="isLogin.set(true)" [class.active]="isLogin()">Login</button>
+        <button (click)="isLogin.set(false)" [class.active]="!isLogin()">Register</button>
     </div>
 
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" [(ngModel)]="password" name="password" required>
-    </div>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div *ngIf="!isLogin()">
+            <label>Email</label>
+            <input type="email" formControlName="email">
+            <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+                Valid email is required
+            </div>
+        </div>
 
-    <button type="submit">{{ isLoginMode ? 'Login' : 'Register' }}</button>
-  </form>
+        <div>
+            <label>Username</label>
+            <input type="text" formControlName="username">
+            <div *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
+                Username is required
+            </div>
+        </div>
 
-  <button class="toggle-btn" (click)="toggleMode()">
-    Switch to {{ isLoginMode ? 'Register' : 'Login' }}
-  </button>
+        <div>
+            <label>Password</label>
+            <input type="password" formControlName="password">
+            <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+                Password is required
+            </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+        <button type="submit">{{ isLogin() ? 'Login' : 'Register' }}</button>
+    </form>
 </div>

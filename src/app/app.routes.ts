@@ -7,7 +7,7 @@ export const routes: Routes = [
     component: AuthComponent,
   },
   {
-    path: "*",
-    redirectTo: "login",
+    path: "add",
+    component: AuthComponent,
   }
 ];

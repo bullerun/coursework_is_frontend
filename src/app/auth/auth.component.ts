@@ -1,39 +1,56 @@
-import {Component} from '@angular/core';
-import {UserService} from '../service/user.service';
-import {FormsModule} from '@angular/forms';
+// auth.component.ts
+import {Component, signal} from '@angular/core';
+import {FormBuilder, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
+import {Router} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {AuthService} from "../service/auth.service";
 
 @Component({
-  selector: 'app-auth',
-  imports: [
-    FormsModule
-  ],
-  templateUrl: './auth.component.html',
-  standalone: true,
-  styleUrl: './auth.component.css'
+    standalone: true,
+    imports: [ReactiveFormsModule, CommonModule],
+    styleUrl: "./app.component.css",
+    templateUrl: "./auth.component.html",
 })
 export class AuthComponent {
-  email = '';
-  password = '';
-  isLoginMode = true;
+    isLogin = signal(true);
+    errorMessage = '';
+    form: FormGroup;
 
-  constructor(private userService: UserService) {
-  }
 
-  toggleMode() {
-    this.isLoginMode = !this.isLoginMode;
-  }
+    constructor(
+        private fb: FormBuilder,
+        private authService: AuthService,
+        private router: Router
+    ) {
 
-  onLogin(event: Event) {
-    event.preventDefault();
-    this.userService.login({email: this.email, password: this.password}).subscribe(response => {
-      console.log('Login successful:', response);
-    });
-  }
+        this.form = this.fb.group({
+            username: ['', Validators.required],
+            password: ['', Validators.required],
+            email: ['', [Validators.email]]
+        });
+    }
 
-  onRegister(event: Event) {
-    event.preventDefault();
-    this.userService.register({email: this.email, password: this.password}).subscribe(response => {
-      console.log('Registration successful:', response);
-    });
-  }
+    onSubmit() {
+        if (this.form.invalid) return;
+        const formData = this.form.getRawValue();
+
+        if (this.isLogin()) {
+            this.authService.login({
+                username: formData.username!,
+                password: formData.password!
+            }).subscribe({
+                next: () => this.router.navigate(['/']),
+                error: (err) => this.errorMessage = err.message || 'Unknown error occurred'
+            });
+        } else {
+            this.authService.register({
+                username: formData.username!,
+                email: formData.email!,
+                password: formData.password!
+            }).subscribe({
+                next: () => this.router.navigate(['/']),
+                error: (err) => this.errorMessage = err.message || 'Unknown error occurred'
+            });
+        }
+    }
 }

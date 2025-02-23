@@ -1,0 +1,36 @@
+<nav class="navbar navbar-expand-md navbar-light w-100">
+  <div class="container px-3">
+    <a class="navbar-brand" href="./"><img src="/logo.jpg" style="width: 84px" alt=""></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+            aria-controls="offcanvasNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="offcanvas offcanvas-start offcanvas-nav" tabindex="-1" id="offcanvasNavbar"
+         aria-labelledby="offcanvasNavbarLabel" style="width: 20rem">
+      <div class="offcanvas-header">
+        <a href="./" class="text-inverse"><img src="/logo.jpg" style="width: 84px" alt=""></a>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+
+      <div class="offcanvas-body pt-0 align-items-center">
+        <ul class="navbar-nav mx-auto align-items-md-center">
+          <li class="nav-link">Лабораторная 1</li>
+          <li class="nav-link">Рыскаль Никита</li>
+          <li class="nav-link">P3318</li>
+          <a routerLink="/person" routerLinkActive="active" class="btn btn-light mx-2">Person</a>
+          <a routerLink="/movie" routerLinkActive="active" class="btn btn-light mx-2">Movie</a>
+        </ul>
+
+        <div *ifAuthenticated="false" class="mt-lg-0 d-flex align-items-md-center">
+          <a routerLink="/login" routerLinkActive="active" class="btn btn-light mx-2">Login</a>
+          <a routerLink="/register" routerLinkActive="active" class="btn btn-primary">Create account</a>
+        </div>
+        <div *ifAuthenticated="true" class="mt-lg-0 d-flex align-items-md-center">
+          <a (click)="logout()" class="btn btn-light mx-2">Log out</a>
+          <a routerLink="/admin">Заявик</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
