@@ -1,36 +1,64 @@
-<div class="auth-container">
-    <div class="auth-switch">
-        <button (click)="isLogin.set(true)" [class.active]="isLogin()">Login</button>
-        <button (click)="isLogin.set(false)" [class.active]="!isLogin()">Register</button>
+<div class="auth-page mt-5">
+    <div class="container page">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 col-xs-12">
+                <h1 class="text-xs-center">{{ title }}</h1>
+                <p class="text-xs-center">
+                </p>
+
+                <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+                    <fieldset class="form-group mt-5">
+                        <input
+                                formControlName="username"
+                                placeholder="Username"
+                                class="form-control form-control-lg"
+                                type="text"
+                                required
+                        />
+                        @if (form.get('username')?.hasError('required') && form.get('username')?.touched) {
+                            <div class="invalid-feedback">Username is required</div>
+                        }
+                    </fieldset>
+                    <fieldset class="form-group mt-2">
+                        @if (authType === "register") {
+                            <input
+                                    formControlName="email"
+                                    placeholder="Email"
+                                    class="form-control form-control-lg"
+                                    type="email"
+                                    [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+                            />
+
+                            @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+                                <div class="invalid-feedback">Email is required</div>
+                            }
+                            @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+                                <div class="invalid-feedback">Invalid email format</div>
+                            }
+                        }
+                    </fieldset>
+                    <fieldset class="form-group mt-2">
+                        <input
+                                formControlName="password"
+                                placeholder="Password"
+                                class="form-control form-control-lg"
+                                type="password"
+                                required
+                        />
+                        @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+                            <div class="invalid-feedback">Password is required</div>
+                        }
+                    </fieldset>
+                    <button
+                            class="btn btn-lg btn-primary pull-xs-right mt-2"
+                            [disabled]="!form.valid"
+                            type="submit"
+                    >
+                        {{ title }}
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div *ngIf="!isLogin()">
-            <label>Email</label>
-            <input type="email" formControlName="email">
-            <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-                Valid email is required
-            </div>
-        </div>
-
-        <div>
-            <label>Username</label>
-            <input type="text" formControlName="username">
-            <div *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
-                Username is required
-            </div>
-        </div>
-
-        <div>
-            <label>Password</label>
-            <input type="password" formControlName="password">
-            <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-                Password is required
-            </div>
-        </div>
-
-        <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
-
-        <button type="submit">{{ isLogin() ? 'Login' : 'Register' }}</button>
-    </form>
 </div>
