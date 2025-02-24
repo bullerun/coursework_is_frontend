@@ -1,29 +1,30 @@
 import {Component, OnInit} from '@angular/core';
-import {Tender} from '../model/tender.model';
-import {TenderService} from '../service/tender.service';
+import {Bid} from '../model/bid.model';
+import {BidService} from '../service/bid.service';
 import {Error} from '../model/error.model';
 import {NgForOf} from '@angular/common';
 
 @Component({
-  selector: 'app-tender',
+  selector: 'app-bid',
   imports: [
     NgForOf
   ],
   standalone: true,
-  templateUrl: './tender.component.html',
-  styleUrl: './tender.component.css'
+  templateUrl: './bid.component.html',
+  styleUrl: './bid.component.css'
 })
-export class TenderComponent implements OnInit {
-  tenders: Tender[] = []
+export class BidComponent implements OnInit {
+
+  bids: Bid[] = [];
 
   constructor(
-    private tenderService: TenderService,
+    private bidService: BidService,
   ) {
   }
 
   ngOnInit(): void {
-    this.tenderService.getTenders().subscribe({
-        next: (res) => this.tenders = res,
+    this.bidService.getBids().subscribe({
+        next: (res) => this.bids = res,
         error: (err: Error) => this.handleError(err)
       }
     )
