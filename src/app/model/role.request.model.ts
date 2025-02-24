@@ -1,4 +1,4 @@
-export interface RoleRequst {
+export interface RoleRequest {
   id: string
   userId: string
   requestedRole: string

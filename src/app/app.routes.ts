@@ -4,6 +4,7 @@ import {inject} from '@angular/core';
 import {UserService} from './service/user.service';
 import {map} from 'rxjs';
 import {OrganizationComponent} from './organization/organization.component';
+import {TenderComponent} from './tender/tender.component';
 
 export const routes: Routes = [
   {
@@ -23,5 +24,9 @@ export const routes: Routes = [
   {
     path: "organization",
     component: OrganizationComponent,
+  },
+  {
+    path: "tender",
+    component: TenderComponent,
   }
 ];

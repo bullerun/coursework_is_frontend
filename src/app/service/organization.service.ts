@@ -3,16 +3,6 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Organization} from '../model/organization.model';
 
-export interface ErrorResponse {
-  error: string;
-  message: string;
-}
-
-export interface Error {
-  error: ErrorResponse;
-
-}
-
 @Injectable({providedIn: 'root'})
 export class OrganizationService {
   private apiUrl = 'http://localhost:11488/organizations'

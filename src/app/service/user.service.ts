@@ -6,16 +6,6 @@ import {Observable, BehaviorSubject, map} from 'rxjs';
 import {User} from "../model/user.model";
 import {JwtService} from "./jwt.service";
 
-export interface ErrorResponse {
-    error: string;
-    message: string;
-}
-
-export interface Error {
-    error: ErrorResponse;
-
-}
-
 @Injectable({providedIn: 'root'})
 export class UserService {
     private apiUrl = 'http://localhost:11488/auth'

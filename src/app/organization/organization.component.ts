@@ -2,8 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Organization} from '../model/organization.model';
 import {NgForOf} from '@angular/common';
 import {OrganizationService} from '../service/organization.service';
-import {Error} from '../service/user.service';
-
+import {Error} from '../model/error.model';
 
 @Component({
   selector: 'app-organization',
