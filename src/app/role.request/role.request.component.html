@@ -1,0 +1,22 @@
+<div class="table-responsive">
+  <table class="table table-striped table-bordered">
+    <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>UserID</th>
+      <th>Requested Role</th>
+      <th>Status</th>
+      <th>Created At</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let rr of roleRequests">
+      <td class="text-monospace">{{ rr.id }}</td>
+      <td>{{ rr.userId }}</td>
+      <td>{{ rr.requestedRole }}</td>
+      <td>{{ rr.status }}</td>
+      <td>{{ rr.createdAt }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

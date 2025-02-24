@@ -6,6 +6,7 @@ import {map} from 'rxjs';
 import {OrganizationComponent} from './organization/organization.component';
 import {TenderComponent} from './tender/tender.component';
 import {BidComponent} from './bid/bid.component';
+import {RoleRequestComponent} from './role.request/role.request.component';
 
 export const routes: Routes = [
   {
@@ -33,5 +34,9 @@ export const routes: Routes = [
   {
     path: "bid",
     component: BidComponent,
+  },
+  {
+    path: "role-request",
+    component: RoleRequestComponent,
   }
 ];
