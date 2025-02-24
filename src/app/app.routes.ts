@@ -7,6 +7,7 @@ import {OrganizationComponent} from './organization/organization.component';
 import {TenderComponent} from './tender/tender.component';
 import {BidComponent} from './bid/bid.component';
 import {RoleRequestComponent} from './role.request/role.request.component';
+import {InvitesComponent} from './organization/invites/invites.component';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,10 @@ export const routes: Routes = [
   {
     path: "organization",
     component: OrganizationComponent,
+  },
+  {
+    path: "organization/invite",
+    component: InvitesComponent,
   },
   {
     path: "tender",

@@ -32,6 +32,8 @@ export class IfAuthenticatedDirective<T> implements OnInit {
         const authRequired = isAuthenticated && this.condition;
         const unauthRequired = !isAuthenticated && !this.condition;
 
+        console.log(isAuthenticated)
+
         if ((authRequired || unauthRequired) && !this.hasView) {
           this.viewContainer.createEmbeddedView(this.templateRef);
           this.hasView = true;

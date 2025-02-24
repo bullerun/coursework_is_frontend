@@ -6,10 +6,11 @@ export interface Tender {
   region: string;
   organizationId: string;
   version: number
-  tenderStatus: TenderStatus
+  status: TenderStatus
   createdAt: Date
   updatedAt: Date
   expiredAt: Date
+  ownerID: string
 }
 
 export enum TenderStatus {
@@ -17,4 +18,15 @@ export enum TenderStatus {
   PUBLISHED = 'PUBLISHED',
   CLOSED = 'CLOSED',
   CANCELED = 'CANCELED'
+}
+
+
+export interface TenderStatusUpdate {
+  tenderId: string;
+  status: TenderStatus;
+}
+
+export interface TenderRollback {
+  tenderId: string;
+  version: number;
 }
