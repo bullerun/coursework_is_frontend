@@ -1,0 +1,125 @@
+<!-- Кнопка для открытия модального окна -->
+<button class="btn btn-success mb-3" (click)="showInviteModal = true">
+  <i class="bi bi-person-plus me-2"></i>Invite User
+</button>
+
+<!-- Модальное окно -->
+<div class="modal fade" [class.show]="showInviteModal" [style.display]="showInviteModal ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Invite User to Organization</h5>
+        <button type="button" class="btn-close" (click)="closeInviteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Organization ID</label>
+            <input type="text" class="form-control"
+                   [(ngModel)]="newInvite.organizationId"
+                   placeholder="Enter Organization ID">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control"
+                   [(ngModel)]="newInvite.receiverUsername"
+                   placeholder="Enter Username">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeInviteModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="onAddInvite()">Send Invite</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showInviteModal"
+     [style.display]="showInviteModal ? 'block' : 'none'"></div>
+<div class="container mt-4">
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5>Received Invitations</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>Sender</th>
+            <th>ReceiverName</th>
+            <th>Sent At</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let invite of receivedInvites">
+            <td>{{ invite.senderName }}</td>
+            <td>{{ invite.receiverName }}</td>
+            <td>{{ invite.createdAt }}</td>
+            <td>
+                <span [ngClass]="{
+                  'badge bg-warning': invite.status === 'PENDING',
+                  'badge bg-success': invite.status === 'ACCEPTED',
+                  'badge bg-danger': invite.status === 'DECLINED'
+                }">
+                  {{ invite.status }}
+                </span>
+            </td>
+            <td>
+              <div class="btn-group" *ngIf="invite.status === 'PENDING'">
+                <button class="btn btn-sm btn-success"
+                        (click)="handleInviteAction(invite.id, 'accept')">
+                  Accept
+                </button>
+                <button class="btn btn-sm btn-danger"
+                        (click)="handleInviteAction(invite.id, 'reject')">
+                  Reject
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Отправленные инвайты -->
+  <div class="card">
+    <div class="card-header">
+      <h5>Sent Invitations</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>Receiver</th>
+            <th>Sender</th>
+            <th>Sent At</th>
+            <th>Status</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let invite of sentInvites">
+            <td>{{ invite.receiverName }}</td>
+            <td>{{ invite.senderName }}</td>
+            <td>{{ invite.createdAt }}</td>
+            <td>
+                <span [ngClass]="{
+                  'badge bg-warning': invite.status === 'PENDING',
+                  'badge bg-success': invite.status === 'ACCEPTED',
+                  'badge bg-danger': invite.status === 'DECLINED'
+                }">
+                  {{ invite.status }}
+                </span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
