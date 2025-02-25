@@ -34,7 +34,10 @@
                         (click)="openModal(editModal, bid)">
                   Edit
                 </button>
-
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="openFeedback(feedback, bid)">
+                  feedbacks
+                </button>
                 <div ngbDropdown class="d-inline-block">
                   <button ngbDropdownToggle class="btn btn-sm btn-outline-secondary">
                     Status
@@ -153,5 +156,37 @@
             [disabled]="!bidForm.valid">
       Save Changes
     </button>
+  </div>
+</ng-template>
+<ng-template #feedback let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Bids for {{ selectedBid?.name }}</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>Description</th>
+          <th>Created</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let feedback of bidFeedbacks">
+          <td>{{ feedback.description }}</td>
+          <td>{{ feedback.createdAt }}</td>
+        </tr>
+        <tr *ngIf="bidFeedbacks.length === 0">
+          <td colspan="4" class="text-center">No bids found</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
   </div>
 </ng-template>

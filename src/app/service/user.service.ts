@@ -8,41 +8,44 @@ import {JwtService} from "./jwt.service";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
-    private apiUrl = 'http://localhost:11488/auth'
+  private apiUrl = 'http://localhost:11488/auth'
+  storedUser = window.localStorage["jwtToken"];
 
-    constructor(private http: HttpClient, private router: Router, private readonly jwtService: JwtService) {
-    }
+  constructor(private http: HttpClient, private router: Router, private readonly jwtService: JwtService) {
+  }
 
-    private currentUserSubject = new BehaviorSubject<User | null>(null);
-    public currentUser = this.currentUserSubject
-        .asObservable()
-        .pipe(distinctUntilChanged());
+  private initialUser = this.storedUser ? this.storedUser : null;
 
-    public isAuthenticated = this.currentUser.pipe(map((user) => !!user));
+  private currentUserSubject = new BehaviorSubject<User | null>(this.initialUser);
+  public currentUser = this.currentUserSubject
+    .asObservable()
+    .pipe(distinctUntilChanged());
 
-
-    register(userData: { username: string; email: string; password: string }): Observable<User | Error> {
-        return this.http.post<User>(`${this.apiUrl}/register`, userData).pipe(
-            tap(user => this.handleAuthSuccess(user))
-        )
-    }
-
-    login(credentials: { username: string; password: string }): Observable<User | Error> {
-        return this.http.post<User>(`${this.apiUrl}/login`, credentials).pipe(
-            tap(user => this.handleAuthSuccess(user))
-        )
-    }
-
-    private handleAuthSuccess(user: User): void {
-        this.jwtService.saveToken(user.token);
-        this.currentUserSubject.next(user);
-        void this.router.navigate(['/']);
-    }
+  public isAuthenticated = this.currentUser.pipe(map((user) => !!user));
 
 
-    logout(): void {
-        this.jwtService.destroyToken();
-        this.currentUserSubject.next(null);
-        void this.router.navigate(['/login']);
-    }
+  register(userData: { username: string; email: string; password: string }): Observable<User | Error> {
+    return this.http.post<User>(`${this.apiUrl}/register`, userData).pipe(
+      tap(user => this.handleAuthSuccess(user))
+    )
+  }
+
+  login(credentials: { username: string; password: string }): Observable<User | Error> {
+    return this.http.post<User>(`${this.apiUrl}/login`, credentials).pipe(
+      tap(user => this.handleAuthSuccess(user))
+    )
+  }
+
+  private handleAuthSuccess(user: User): void {
+    this.jwtService.saveToken(user.token);
+    this.currentUserSubject.next(user);
+    void this.router.navigate(['/']);
+  }
+
+
+  logout(): void {
+    this.jwtService.destroyToken();
+    this.currentUserSubject.next(null);
+    void this.router.navigate(['/login']);
+  }
 }

@@ -1,10 +1,19 @@
 import {Component, OnInit} from '@angular/core';
-import {NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDropdown,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
+  NgbModal
+} from '@ng-bootstrap/ng-bootstrap';
 import {BidService} from '../service/bid.service';
-import {NgClass, NgForOf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Bid} from '../model/bid.model';
 import {RUSSIAN_REGIONS} from '../model/russion-region.model';
+import {FeedbackResponseDTO} from '../model/feedback.model';
+import {FeedbackService} from '../service/feedback.service';
 
 @Component({
   selector: 'app-bid',
@@ -17,7 +26,9 @@ import {RUSSIAN_REGIONS} from '../model/russion-region.model';
     NgbDropdownToggle,
     NgbDropdown,
     NgbDropdownItem,
-    NgbDropdownMenu
+    NgbDropdownMenu,
+    NgIf,
+    NgbDropdownButtonItem
   ],
   styleUrls: ['./bid.component.css']
 })
@@ -28,13 +39,14 @@ export class BidComponent implements OnInit {
   editBidData: Partial<Bid> = {};
   errorMessage = '';
   isLoading = false;
-
+  bidFeedbacks: FeedbackResponseDTO[] = [];
   statusUpdate = {bidId: '', status: ''};
   rollbackRequest = {bidId: '', version: 0};
 
   constructor(
     private bidService: BidService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private feedbackService: FeedbackService,
   ) {
   }
 
@@ -106,6 +118,14 @@ export class BidComponent implements OnInit {
     this.modalService.open(content, {size: 'lg'});
   }
 
+  openFeedback(content: any, bid?: Bid): void {
+    this.feedbackService.getFeedbacks(bid?.id || "").subscribe({
+      next: (res) => this.bidFeedbacks = res,
+      error: (err) => this.handleError(err)
+    })
+    this.modalService.open(content, {size: 'lg'});
+  }
+
   getStatusClass(status: string): string {
     return {
       'CREATED': 'bg-primary',
@@ -116,4 +136,12 @@ export class BidComponent implements OnInit {
   }
 
   protected readonly RUSSIAN_REGIONS = RUSSIAN_REGIONS;
+
+  getFeedbackStatusClass(status: string): string {
+    return {
+      'PENDING': 'bg-warning',
+      'APPROVED': 'bg-success',
+      'CANCELED': 'bg-danger'
+    }[status] || 'bg-secondary';
+  }
 }
