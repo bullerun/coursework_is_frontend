@@ -6,7 +6,11 @@ import {FormsModule} from '@angular/forms';
 import {RUSSIAN_REGIONS} from '../model/russion-region.model';
 import {OrganizationService} from '../service/organization.service';
 import {Organization} from '../model/organization.model';
-import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDropdownModule, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {AuthorType, Bid} from '../model/bid.model';
+import {BidService} from '../service/bid.service';
+import {Feedback, FeedbackDecisionDTO, FeedbackStatus} from '../model/feedback.model';
+import {FeedbackService} from '../service/feedback.service';
 
 
 @Component({
@@ -33,7 +37,44 @@ export class TenderComponent implements OnInit {
   isViewingMyTenders = true;
   isEditing = false;
   newTender: Partial<Tender> = {};
+  newBid: Partial<Bid> = {};
+  newFeedback: Partial<Feedback> = {};
+  selectedTenderForBid?: Tender;
+  tenderBids: Bid[] = [];
+  isLoadingBids = false;
+  feedbackStatus: FeedbackStatus[] = [
+    FeedbackStatus.APPROVED,
+    FeedbackStatus.PENDING,
+    FeedbackStatus.CANCELED
+  ]
+  selectedBid: Partial<Bid> = {};
 
+  getBidStatusClass(status: string): string {
+    return {
+      'CREATED': 'bg-primary',
+      'PUBLISHED': 'bg-info',
+      'APPROVED': 'bg-success',
+      'CLOSED': 'bg-secondary'
+    }[status] || 'bg-light';
+  }
+
+// Метод для открытия модального окна
+  openBidsModal(tender: Tender, modalTemplate: any): void {
+    this.selectedTender = tender;
+    this.isLoadingBids = true;
+    this.modalService.open(modalTemplate, {size: 'xl'});
+
+    this.bidService.getBidsForTender(tender.id).subscribe({
+      next: (bids) => {
+        this.tenderBids = bids;
+        this.isLoadingBids = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load bids';
+        this.isLoadingBids = false;
+      }
+    });
+  }
 
   loadTenders(): void {
     this.isLoading = true;
@@ -53,7 +94,6 @@ export class TenderComponent implements OnInit {
     });
   }
 
-  // Новые методы
   toggleViewMode(): void {
     this.isViewingMyTenders = !this.isViewingMyTenders;
     this.loadTenders();
@@ -90,7 +130,10 @@ export class TenderComponent implements OnInit {
   }
 
   constructor(private tenderService: TenderService,
-              private organizationService: OrganizationService
+              private organizationService: OrganizationService,
+              private modalService: NgbModal,
+              private bidService: BidService,
+              private feedbackService: FeedbackService,
   ) {
   }
 
@@ -107,11 +150,6 @@ export class TenderComponent implements OnInit {
     });
   }
 
-  onSelectTender(tender: Tender): void {
-    this.selectedTender = tender;
-    this.statusUpdate.tenderId = tender.id;
-    this.rollbackRequest.tenderId = tender.id;
-  }
 
   updateStatus(id: string, status: TenderStatus): void {
     this.tenderService.updateTenderStatus({tenderId: id, status: status}).subscribe({
@@ -151,4 +189,73 @@ export class TenderComponent implements OnInit {
     TenderStatus.CLOSED,
     TenderStatus.CANCELED
   ];
+
+  getStatusLabel(status: TenderStatus): string {
+    return {
+      'CREATED': 'Created',
+      'PUBLISHED': 'Published',
+      'CLOSED': 'Closed',
+      'CANCELED': 'Canceled'
+    }[status];
+  }
+
+  getStatusIcon(status: TenderStatus): string {
+    return {
+      'CREATED': 'bi bi-circle text-primary',
+      'PUBLISHED': 'bi bi-check-circle text-success',
+      'CLOSED': 'bi bi-lock text-secondary',
+      'CANCELED': 'bi bi-x-circle text-danger'
+    }[status];
+  }
+
+  openBidModal(tender: Tender, content: any): void {
+    this.selectedTenderForBid = tender;
+    this.newBid = {
+      tenderId: tender.id,
+      authorType: AuthorType.EMPLOYEE,
+    };
+    this.modalService.open(content, {size: 'lg'});
+  }
+
+  openFeedbackModal(content: any, bid: Bid, tender?: Tender): void {
+    this.selectedTender = tender;
+    this.selectedBid = bid;
+    this.modalService.open(content, {size: 'lg'});
+  }
+
+  submitBid(): void {
+    if (this.newBid.authorType === 'ORGANIZATION' && !this.newBid.authorId) {
+      alert('Please select an organization');
+      return;
+    }
+
+    this.bidService.createBid(this.newBid as Bid).subscribe({
+      next: () => {
+        alert("success");
+      },
+      error: (err) => this.errorMessage = err.error.message
+    });
+  }
+
+  submitFeedBack() {
+    this.feedbackService.createFeedback({
+      bidId: this.selectedBid.id || "",
+      description: this.newFeedback.description || "",
+      organizationId: this.selectedTender?.organizationId || ""
+    }).subscribe()
+  }
+
+  approve(id: string) {
+    this.feedbackService.submitDecision(id, FeedbackDecisionDTO.APPROVE).subscribe({
+      next: () => alert("success"),
+      error: (err) => console.error(err)
+    });
+  }
+
+  reject(id: string) {
+    this.feedbackService.submitDecision(id, FeedbackDecisionDTO.REJECT).subscribe({
+      next: () => alert("success"),
+      error: (err) => console.error(err)
+    });
+  }
 }

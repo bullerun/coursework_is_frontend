@@ -7,7 +7,7 @@ export interface Bid {
   region: string
   authorType: AuthorType
   authorId: string
-  bidStatus: BidStatus
+  status: BidStatus
   createdAt: Date
   updatedAt: Date
   expiredAt: Date
@@ -21,5 +21,6 @@ export enum AuthorType {
 export enum BidStatus {
   CREATED = 'CREATED',
   PUBLISHED = 'PUBLISHED',
-  CLOSED = 'CLOSED'
+  CLOSED = 'CLOSED',
+  APPROVED = 'APPROVED',
 }

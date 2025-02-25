@@ -16,7 +16,6 @@
     </div>
   </div>
 
-  <!-- Форма создания/редактирования -->
   <div class="card mb-4" *ngIf="isViewingMyTenders && isEditing">
     <div class="card-header">
       {{ newTender.id ? 'Edit Tender' : 'Create New Tender' }}
@@ -57,7 +56,7 @@
               <option value="" disabled selected>Select Organization</option>
               <option *ngFor="let org of organizations"
                       [value]="org.id">
-                {{ org.name }} ({{ org.id  }}...)
+                {{ org.name }} ({{ org.id }}...)
               </option>
             </select>
             <small *ngIf="!organizations.length" class="text-danger">
@@ -117,7 +116,7 @@
             <th>Cost</th>
             <th>Expires</th>
             <th>Status</th>
-            <th *ngIf="isViewingMyTenders">Actions</th>
+            <th>Actions</th>
           </tr>
           </thead>
           <tbody>
@@ -131,43 +130,64 @@
                   {{ tender.status }}
                 </span>
             </td>
-            <td *ngIf="isViewingMyTenders">
-              <div class="btn-group">
-                <button class="btn btn-sm btn-outline-primary"
-                        (click)="startEdit(tender)">
-                  Edit
-                </button>
-
-                <div ngbDropdown class="d-inline-block">
-                  <button ngbDropdownToggle class="btn btn-sm btn-outline-secondary">
-                    Status
+            @if (isViewingMyTenders) {
+              <td>
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-outline-primary"
+                          (click)="startEdit(tender)">
+                    Edit
                   </button>
-                  <div ngbDropdownMenu>
-                    <button *ngFor="let status of statuses"
-                            (click)="statusUpdate.status = status; updateStatus(tender.id, status)">
-                      Set as {{ status }}
+
+                  <div ngbDropdown class="d-inline-block">
+                    <button ngbDropdownToggle class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                      <i class="bi bi-gear me-2"></i>
+                      Status
                     </button>
-                  </div>
-                </div>
-
-                <div ngbDropdown class="d-inline-block">
-                  <button ngbDropdownToggle class="btn btn-sm btn-outline-warning">
-                    Rollback
-                  </button>
-                  <div ngbDropdownMenu>
-                    <div class="px-3 py-2">
-                      <input type="number" class="form-control mb-2"
-                             [(ngModel)]="rollbackRequest.version"
-                             min="1" placeholder="Version">
-                      <button class="btn btn-warning w-100"
-                              (click)="rollbackVersion()">
-                        Confirm
+                    <div ngbDropdownMenu class="dropdown-menu-custom">
+                      <button
+                        *ngFor="let status of statuses"
+                        ngbDropdownItem
+                        class="dropdown-item-custom"
+                        (click)="statusUpdate.status = status; updateStatus(tender.id, status)">
+                        <div class="d-flex align-items-center">
+                          <i [class]="getStatusIcon(status)" class="me-2"></i>
+                          <span>{{ getStatusLabel(status) }}</span>
+                        </div>
                       </button>
                     </div>
                   </div>
+
+                  <div ngbDropdown class="d-inline-block">
+                    <button ngbDropdownToggle class="btn btn-sm btn-outline-warning">
+                      Rollback
+                    </button>
+                    <div ngbDropdownMenu>
+                      <div class="px-3 py-2">
+                        <input type="number" class="form-control mb-2"
+                               [(ngModel)]="rollbackRequest.version"
+                               min="1" placeholder="Version">
+                        <button class="btn btn-warning w-100"
+                                (click)="rollbackVersion()">
+                          Confirm
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-outline-info"
+                          (click)="openBidsModal(tender, bidsModal)">
+                    View Bids
+                  </button>
                 </div>
-              </div>
-            </td>
+              </td>
+            } @else {
+              <td>
+                <button class="btn btn-sm btn-success"
+                        (click)="openBidModal(tender, bidModal)">
+                  Submit Bid
+                </button>
+              </td>
+            }
+
           </tr>
           </tbody>
         </table>
@@ -175,3 +195,172 @@
     </div>
   </div>
 </div>
+<ng-template #bidModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Create Bid</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form #bidForm="ngForm">
+      <div class="mb-3">
+        <label class="form-label">Bid Name</label>
+        <input type="text" class="form-control"
+               [(ngModel)]="newBid.name" name="name" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" rows="3"
+                  [(ngModel)]="newBid.description" name="description" required></textarea>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Cost</label>
+          <input type="number" class="form-control"
+                 [(ngModel)]="newBid.cost" name="cost" min="0" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Region</label>
+          <select class="form-select"
+                  [(ngModel)]="newBid.region" name="region" required>
+            <option *ngFor="let region of RUSSIAN_REGIONS"
+                    [value]="region">{{ region }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Expiration Date</label>
+          <input type="datetime-local" class="form-control"
+                 [(ngModel)]="newBid.expiredAt" name="expiredAt" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Author Type</label>
+          <select class="form-select"
+                  [(ngModel)]="newBid.authorType"
+                  name="authorType"
+                  required>
+            <option value="EMPLOYEE">Employee</option>
+            <option value="ORGANIZATION">Organization</option>
+          </select>
+        </div>
+
+        <div class="col-md-6" *ngIf="newBid.authorType === 'ORGANIZATION'">
+          <label class="form-label">Organization</label>
+          <select class="form-select"
+                  [(ngModel)]="newBid.authorId"
+                  name="organizationId"
+                  required>
+            <option *ngFor="let org of organizations"
+                    [value]="org.id">
+              {{ org.name }} ({{ org.id }}...)
+            </option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary"
+            (click)="submitBid(); modal.close()"
+            [disabled]="!bidForm.valid">
+      Submit Bid
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #bidsModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Bids for {{ selectedTender?.name }}</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="isLoadingBids" class="text-center">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <div *ngIf="!isLoadingBids" class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Cost</th>
+          <th>Status</th>
+          <th>Expires</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let bid of tenderBids">
+          <td>{{ bid.name }}</td>
+          <td>{{ bid.cost }}</td>
+          <td>
+              <span class="badge" [ngClass]="getBidStatusClass(bid.status)">
+                {{ bid.status }}
+              </span>
+          </td>
+          <td>{{ bid.expiredAt }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-info"
+                    (click)="openFeedbackModal(feedbackModal, bid, selectedTender)">
+              create feedback
+            </button>
+            <div ngbDropdown class="d-inline-block">
+              <button ngbDropdownToggle class="btn btn-sm btn-outline-secondary">
+                Decision
+              </button>
+              <div ngbDropdownMenu>
+                <button ngbDropdownItem
+                        (click)="approve(bid.id)">
+                  Approve
+                </button>
+                <button ngbDropdownItem
+                        (click)="reject(bid.id)">
+                  Reject
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="tenderBids.length === 0">
+          <td colspan="4" class="text-center">No bids found</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>
+
+
+<ng-template #feedbackModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Add Feedback</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form #feedbackForm="ngForm">
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control"
+                  [(ngModel)]="newFeedback.description"
+                  name="description"
+                  required></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary"
+            (click)="submitFeedBack()"
+            [disabled]="!feedbackForm.valid">
+      Submit
+    </button>
+  </div>
+</ng-template>
